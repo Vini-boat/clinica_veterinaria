@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Clinica Veterinaria
 
-## Getting Started
+Next.js app using Supabase SSR auth with Google login.
 
-First, run the development server:
+## Environment variables
+
+Create a `.env.local` file with:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your-publishable-key
+```
+
+## Google provider setup
+
+1. In Google Cloud Console, create an OAuth Client ID of type Web application.
+2. Add authorized JavaScript origins:
+	- `http://localhost:3000`
+	- your production app origin
+3. In Supabase Dashboard, open Authentication > Providers > Google.
+4. Paste Google client ID and client secret.
+5. Add redirect URL allow-list entries in Supabase for:
+	- `http://localhost:3000/auth/callback`
+	- your production callback URL
+6. Ensure required scopes are configured in Google Auth Platform:
+	- `openid`
+	- `.../auth/userinfo.email`
+	- `.../auth/userinfo.profile`
+
+## Auth routes
+
+- Login page: `/auth/login`
+- OAuth callback: `/auth/callback`
+- Callback error page: `/auth/auth-code-error`
+
+The home route `/` is protected and redirects unauthenticated users to `/auth/login?next=/`.
+
+## Local development
+
+Run the app:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000/auth/login` and click Login With Google.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Manual verification checklist
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Logged out visit to `/` redirects to `/auth/login`.
+2. Clicking Login With Google redirects to Google consent screen.
+3. Successful consent returns through `/auth/callback` and lands on `/`.
+4. If callback code exchange fails, user is sent to `/auth/auth-code-error`.
