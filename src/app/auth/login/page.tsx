@@ -2,9 +2,9 @@
 
 import { createClient } from "@/utils/supabase/client";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
-export default function LoginPage() {
+function LoginContent() {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -50,5 +50,22 @@ export default function LoginPage() {
         {errorMessage ? <p className="mt-3 text-sm text-red-600">{errorMessage}</p> : null}
       </section>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen grid place-items-center px-6">
+          <section className="w-full max-w-sm rounded-2xl border border-black/10 bg-white p-6 shadow-sm dark:border-white/15 dark:bg-black/20">
+            <h1 className="text-2xl font-semibold">Login</h1>
+            <p className="mt-2 text-sm opacity-80">Loading...</p>
+          </section>
+        </main>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }
