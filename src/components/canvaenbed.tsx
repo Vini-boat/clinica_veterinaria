@@ -1,6 +1,3 @@
-// components/CanvaEmbed.tsx
-import React from 'react';
-
 const CanvaEmbed = ({ embedUrl }: { embedUrl: string }) => {
   return (
     <div className="flex flex-col items-center justify-center w-full my-8">
@@ -13,11 +10,6 @@ const CanvaEmbed = ({ embedUrl }: { embedUrl: string }) => {
           allowFullScreen
           allow="fullscreen"
         ></iframe>
-      </div>
-      
-      {/* Opcional: Link para o Canva (créditos) */}
-      <div className="mt-2 text-sm text-gray-500 italic">
-        Apresentação criada por <span className="font-semibold text-blue-600">Vini</span>
       </div>
     </div>
   );

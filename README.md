@@ -1,53 +1,54 @@
 # Clinica Veterinaria
 
-Next.js app using Supabase SSR auth with Google login.
+## Stack do Projeto
 
-## Environment variables
+### Frameworks e Runtime
 
-Create a `.env.local` file with:
+| Tecnologia | Tipo | Uso no projeto |
+| --- | --- | --- |
+| Next.js 16 | Framework full-stack React | Estrutura a aplicacao com App Router, renderizacao server/client e rotas para auth. |
+| React 19 | Biblioteca de UI | Construi os componentes e a interface da aplicacao. |
+| React DOM 19 | Renderer web do React | Faz a renderizacao dos componentes React no navegador e no fluxo de hidratacao. |
+| Node.js | Runtime JavaScript no servidor | Executa o ambiente de desenvolvimento, build e servidor Next.js. |
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=your-project-url
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your-publishable-key
-```
+### Backend e Dados
 
-## Google provider setup
+| Tecnologia | Tipo | Uso no projeto |
+| --- | --- | --- |
+| Supabase | Plataforma backend (BaaS) | Fornece banco Postgres, autenticacao e APIs para o sistema da clinica. |
+| @supabase/supabase-js | SDK JavaScript do Supabase | Permite consultar tabelas e chamar recursos do Supabase no app. |
+| @supabase/ssr | Integracao SSR para Supabase | Cria clientes Supabase para browser, server components e middleware com cookies de sessao. |
 
-1. In Google Cloud Console, create an OAuth Client ID of type Web application.
-2. Add authorized JavaScript origins:
-	- `http://localhost:3000`
-	- your production app origin
-3. In Supabase Dashboard, open Authentication > Providers > Google.
-4. Paste Google client ID and client secret.
-5. Add redirect URL allow-list entries in Supabase for:
-	- `http://localhost:3000/auth/callback`
-	- your production callback URL
-6. Ensure required scopes are configured in Google Auth Platform:
-	- `openid`
-	- `.../auth/userinfo.email`
-	- `.../auth/userinfo.profile`
+### Estilizacao
 
-## Auth routes
+| Tecnologia | Tipo | Uso no projeto |
+| --- | --- | --- |
+| Tailwind CSS 4 | Framework CSS utilitario | Define o estilo da interface usando classes utilitarias no JSX/TSX. |
+| PostCSS | Processador de CSS | Processa o CSS do projeto com o plugin oficial do Tailwind. |
+| @tailwindcss/postcss | Plugin PostCSS do Tailwind | Integra o Tailwind CSS 4 ao pipeline de estilos da aplicacao. |
+| next/font (Geist e Geist Mono) | Sistema de fontes do Next.js | Carrega e otimiza fontes do Google automaticamente no layout global. |
 
-- Login page: `/auth/login`
-- OAuth callback: `/auth/callback`
-- Callback error page: `/auth/auth-code-error`
+### Qualidade e Linguagem
 
-The home route `/` is protected and redirects unauthenticated users to `/auth/login?next=/`.
+| Tecnologia | Tipo | Uso no projeto |
+| --- | --- | --- |
+| TypeScript 5 | Linguagem tipada para JavaScript | Garante tipagem estatica e melhor manutencao do codigo. |
+| ESLint 9 | Linter de codigo | Identifica problemas de qualidade e padrao no codigo-fonte. |
+| eslint-config-next | Regras ESLint do ecossistema Next | Aplica regras recomendadas de Next.js, React e Core Web Vitals. |
+| @types/node, @types/react, @types/react-dom | Tipos TypeScript | Fornecem definicoes de tipos para Node.js e bibliotecas React. |
 
-## Local development
+### Compilacao e Otimizacao
 
-Run the app:
+| Tecnologia | Tipo | Uso no projeto |
+| --- | --- | --- |
+| React Compiler (reactCompiler + babel-plugin-react-compiler) | Otimizacao de compilacao React | Ativa transformacoes de compilacao para melhorar desempenho e reduzir trabalho manual de memoizacao. |
 
-```bash
-npm run dev
-```
+### CLI e Scripts
 
-Open `http://localhost:3000/auth/login` and click Login With Google.
-
-## Manual verification checklist
-
-1. Logged out visit to `/` redirects to `/auth/login`.
-2. Clicking Login With Google redirects to Google consent screen.
-3. Successful consent returns through `/auth/callback` and lands on `/`.
-4. If callback code exchange fails, user is sent to `/auth/auth-code-error`.
+| Comando | Ferramenta | Uso no projeto |
+| --- | --- | --- |
+| npm run dev | Next.js CLI | Sobe o ambiente de desenvolvimento da aplicacao. |
+| npm run build | Next.js CLI | Gera a build de producao do projeto. |
+| npm run start | Next.js CLI | Inicia o servidor da build de producao. |
+| npm run lint | ESLint CLI | Executa analise estatica para encontrar problemas de codigo. |
+| supabase | Supabase CLI | Gerencia recursos do projeto Supabase (migracoes, banco local e operacoes de desenvolvimento). |
