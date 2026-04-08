@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { medicamentoSchema, type MedicamentoFormValues } from "./schema";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type MedicamentoSubmit = (values: MedicamentoFormValues) => Promise<{ ok: boolean; message: string }>;
 
@@ -36,22 +39,21 @@ export default function MedicamentoForm({
   });
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="nome" className="mb-1 block text-sm font-medium">Nome</label>
-        <input id="nome" {...form.register("nome")} className="w-full rounded-md border px-3 py-2" />
-        <p className="mt-1 text-xs text-destructive">{form.formState.errors.nome?.message}</p>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="nome">Nome</Label>
+        <Input id="nome" {...form.register("nome")} aria-invalid={!!form.formState.errors.nome} />
+        <p className="text-xs text-destructive">{form.formState.errors.nome?.message}</p>
       </div>
 
       {serverMessage ? <p className="text-sm">{serverMessage}</p> : null}
 
-      <button
+      <Button
         type="submit"
         disabled={form.formState.isSubmitting}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
       >
         {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
-      </button>
+      </Button>
     </form>
   );
 }

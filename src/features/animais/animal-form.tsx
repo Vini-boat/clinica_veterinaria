@@ -3,9 +3,21 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { animalSchema, type AnimalFormValues } from "./schema";
 import { toNullableNumber } from "@/features/shared/utils/form-utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 type AnimalSubmit = (values: AnimalFormValues) => Promise<{ ok: boolean; message: string }>;
 
@@ -50,121 +62,143 @@ export default function AnimalForm({
     }
   });
 
+  const idCliente = useWatch({ control: form.control, name: "id_cliente" });
+  const idTipoEspecie = useWatch({ control: form.control, name: "id_tipo_especie" });
+  const sexo = useWatch({ control: form.control, name: "sexo" });
+  const porte = useWatch({ control: form.control, name: "porte" });
+  const idade = useWatch({ control: form.control, name: "idade" });
+  const pesoGramas = useWatch({ control: form.control, name: "peso_gramas" });
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="nome" className="mb-1 block text-sm font-medium">Nome</label>
-        <input id="nome" {...form.register("nome")} className="w-full rounded-md border px-3 py-2" />
-        <p className="mt-1 text-xs text-destructive">{form.formState.errors.nome?.message}</p>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="nome">Nome</Label>
+        <Input id="nome" {...form.register("nome")} aria-invalid={!!form.formState.errors.nome} />
+        <p className="text-xs text-destructive">{form.formState.errors.nome?.message}</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="id_cliente" className="mb-1 block text-sm font-medium">Cliente dono</label>
-          <select
-            id="id_cliente"
-            className="w-full rounded-md border px-3 py-2"
-            value={form.watch("id_cliente") ?? ""}
-            onChange={(event) => form.setValue("id_cliente", Number(event.target.value), { shouldValidate: true })}
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="id_cliente">Cliente dono</Label>
+          <Select
+            value={idCliente ? String(idCliente) : undefined}
+            onValueChange={(value) => form.setValue("id_cliente", Number(value), { shouldValidate: true })}
           >
-            <option value="">Selecione...</option>
-            {lookup.clientes.map((cliente) => (
-              <option key={cliente.id_cliente} value={cliente.id_cliente}>
-                {cliente.nome ?? `Cliente ${cliente.id_cliente}`}
-              </option>
-            ))}
-          </select>
-          <p className="mt-1 text-xs text-destructive">{form.formState.errors.id_cliente?.message}</p>
+            <SelectTrigger id="id_cliente" className="w-full" aria-invalid={!!form.formState.errors.id_cliente}>
+              <SelectValue placeholder="Selecione..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {lookup.clientes.map((cliente) => (
+                  <SelectItem key={cliente.id_cliente} value={String(cliente.id_cliente)}>
+                    {cliente.nome ?? `Cliente ${cliente.id_cliente}`}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-destructive">{form.formState.errors.id_cliente?.message}</p>
         </div>
 
-        <div>
-          <label htmlFor="id_tipo_especie" className="mb-1 block text-sm font-medium">Especie e raca</label>
-          <select
-            id="id_tipo_especie"
-            className="w-full rounded-md border px-3 py-2"
-            value={form.watch("id_tipo_especie") ?? ""}
-            onChange={(event) => form.setValue("id_tipo_especie", Number(event.target.value), { shouldValidate: true })}
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="id_tipo_especie">Especie e raca</Label>
+          <Select
+            value={idTipoEspecie ? String(idTipoEspecie) : undefined}
+            onValueChange={(value) => form.setValue("id_tipo_especie", Number(value), { shouldValidate: true })}
           >
-            <option value="">Selecione...</option>
-            {lookup.tiposEspecie.map((tipo) => (
-              <option key={tipo.id_tipo_especie} value={tipo.id_tipo_especie}>
-                {(tipo.especie ?? "Especie") + " - " + (tipo.raca ?? "Raca")}
-              </option>
-            ))}
-          </select>
-          <p className="mt-1 text-xs text-destructive">{form.formState.errors.id_tipo_especie?.message}</p>
+            <SelectTrigger id="id_tipo_especie" className="w-full" aria-invalid={!!form.formState.errors.id_tipo_especie}>
+              <SelectValue placeholder="Selecione..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {lookup.tiposEspecie.map((tipo) => (
+                  <SelectItem key={tipo.id_tipo_especie} value={String(tipo.id_tipo_especie)}>
+                    {(tipo.especie ?? "Especie") + " - " + (tipo.raca ?? "Raca")}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-destructive">{form.formState.errors.id_tipo_especie?.message}</p>
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <label htmlFor="sexo" className="mb-1 block text-sm font-medium">Sexo</label>
-          <select
-            id="sexo"
-            className="w-full rounded-md border px-3 py-2"
-            value={form.watch("sexo") ?? ""}
-            onChange={(event) => form.setValue("sexo", event.target.value ? (event.target.value as "Macho" | "Femea") : null)}
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="sexo">Sexo</Label>
+          <Select
+            value={sexo ?? "nao-informado"}
+            onValueChange={(value) => form.setValue("sexo", value === "nao-informado" ? null : (value as "Macho" | "Femea"))}
           >
-            <option value="">Nao informado</option>
-            <option value="Macho">Macho</option>
-            <option value="Femea">Femea</option>
-          </select>
+            <SelectTrigger id="sexo" className="w-full">
+              <SelectValue placeholder="Nao informado" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="nao-informado">Nao informado</SelectItem>
+                <SelectItem value="Macho">Macho</SelectItem>
+                <SelectItem value="Femea">Femea</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
 
-        <div>
-          <label htmlFor="porte" className="mb-1 block text-sm font-medium">Porte</label>
-          <select
-            id="porte"
-            className="w-full rounded-md border px-3 py-2"
-            value={form.watch("porte") ?? ""}
-            onChange={(event) =>
-              form.setValue("porte", event.target.value ? (event.target.value as "Pequeno" | "Medio" | "Grande") : null)
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="porte">Porte</Label>
+          <Select
+            value={porte ?? "nao-informado"}
+            onValueChange={(value) =>
+              form.setValue("porte", value === "nao-informado" ? null : (value as "Pequeno" | "Medio" | "Grande"))
             }
           >
-            <option value="">Nao informado</option>
-            <option value="Pequeno">Pequeno</option>
-            <option value="Medio">Medio</option>
-            <option value="Grande">Grande</option>
-          </select>
+            <SelectTrigger id="porte" className="w-full">
+              <SelectValue placeholder="Nao informado" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="nao-informado">Nao informado</SelectItem>
+                <SelectItem value="Pequeno">Pequeno</SelectItem>
+                <SelectItem value="Medio">Medio</SelectItem>
+                <SelectItem value="Grande">Grande</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
 
-        <div>
-          <label htmlFor="idade" className="mb-1 block text-sm font-medium">Idade (anos)</label>
-          <input
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="idade">Idade (anos)</Label>
+          <Input
             id="idade"
             type="number"
-            className="w-full rounded-md border px-3 py-2"
-            value={form.watch("idade") ?? ""}
+            value={idade ?? ""}
             onChange={(event) => form.setValue("idade", toNullableNumber(event.target.value), { shouldValidate: true })}
           />
         </div>
 
-        <div>
-          <label htmlFor="peso_gramas" className="mb-1 block text-sm font-medium">Peso (g)</label>
-          <input
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="peso_gramas">Peso (g)</Label>
+          <Input
             id="peso_gramas"
             type="number"
-            className="w-full rounded-md border px-3 py-2"
-            value={form.watch("peso_gramas") ?? ""}
+            value={pesoGramas ?? ""}
             onChange={(event) => form.setValue("peso_gramas", toNullableNumber(event.target.value), { shouldValidate: true })}
           />
         </div>
       </div>
 
-      <div>
-        <label htmlFor="observacao" className="mb-1 block text-sm font-medium">Observacao</label>
-        <textarea id="observacao" {...form.register("observacao")} className="min-h-20 w-full rounded-md border px-3 py-2" />
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="observacao">Observacao</Label>
+        <Textarea id="observacao" {...form.register("observacao")} className="min-h-20" />
       </div>
 
       {serverMessage ? <p className="text-sm">{serverMessage}</p> : null}
 
-      <button
+      <Button
         type="submit"
         disabled={form.formState.isSubmitting}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
       >
         {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
-      </button>
+      </Button>
     </form>
   );
 }

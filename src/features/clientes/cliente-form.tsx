@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { clienteSchema, type ClienteFormValues } from "./schema";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type ClienteSubmit = (values: ClienteFormValues) => Promise<{ ok: boolean; message: string }>;
 
@@ -39,39 +42,38 @@ export default function ClienteForm({
   });
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="nome" className="mb-1 block text-sm font-medium">Nome</label>
-        <input id="nome" {...form.register("nome")} className="w-full rounded-md border px-3 py-2" />
-        <p className="mt-1 text-xs text-destructive">{form.formState.errors.nome?.message}</p>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="nome">Nome</Label>
+        <Input id="nome" {...form.register("nome")} aria-invalid={!!form.formState.errors.nome} />
+        <p className="text-xs text-destructive">{form.formState.errors.nome?.message}</p>
       </div>
 
-      <div>
-        <label htmlFor="cpf" className="mb-1 block text-sm font-medium">CPF</label>
-        <input id="cpf" {...form.register("cpf")} className="w-full rounded-md border px-3 py-2" />
-        <p className="mt-1 text-xs text-destructive">{form.formState.errors.cpf?.message}</p>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="cpf">CPF</Label>
+        <Input id="cpf" {...form.register("cpf")} aria-invalid={!!form.formState.errors.cpf} />
+        <p className="text-xs text-destructive">{form.formState.errors.cpf?.message}</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="telefone" className="mb-1 block text-sm font-medium">Telefone</label>
-          <input id="telefone" {...form.register("telefone")} className="w-full rounded-md border px-3 py-2" />
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="telefone">Telefone</Label>
+          <Input id="telefone" {...form.register("telefone")} />
         </div>
-        <div>
-          <label htmlFor="endereco" className="mb-1 block text-sm font-medium">Endereco</label>
-          <input id="endereco" {...form.register("endereco")} className="w-full rounded-md border px-3 py-2" />
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="endereco">Endereco</Label>
+          <Input id="endereco" {...form.register("endereco")} />
         </div>
       </div>
 
       {serverMessage ? <p className="text-sm">{serverMessage}</p> : null}
 
-      <button
+      <Button
         type="submit"
         disabled={form.formState.isSubmitting}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
       >
         {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
-      </button>
+      </Button>
     </form>
   );
 }

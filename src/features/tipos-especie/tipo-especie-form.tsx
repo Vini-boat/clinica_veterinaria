@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { tipoEspecieSchema, type TipoEspecieFormValues } from "./schema";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type TipoEspecieSubmit = (values: TipoEspecieFormValues) => Promise<{ ok: boolean; message: string }>;
 
@@ -37,27 +40,26 @@ export default function TipoEspecieForm({
   });
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="especie" className="mb-1 block text-sm font-medium">Especie</label>
-        <input id="especie" {...form.register("especie")} className="w-full rounded-md border px-3 py-2" />
-        <p className="mt-1 text-xs text-destructive">{form.formState.errors.especie?.message}</p>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="especie">Especie</Label>
+        <Input id="especie" {...form.register("especie")} aria-invalid={!!form.formState.errors.especie} />
+        <p className="text-xs text-destructive">{form.formState.errors.especie?.message}</p>
       </div>
-      <div>
-        <label htmlFor="raca" className="mb-1 block text-sm font-medium">Raca</label>
-        <input id="raca" {...form.register("raca")} className="w-full rounded-md border px-3 py-2" />
-        <p className="mt-1 text-xs text-destructive">{form.formState.errors.raca?.message}</p>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="raca">Raca</Label>
+        <Input id="raca" {...form.register("raca")} aria-invalid={!!form.formState.errors.raca} />
+        <p className="text-xs text-destructive">{form.formState.errors.raca?.message}</p>
       </div>
 
       {serverMessage ? <p className="text-sm">{serverMessage}</p> : null}
 
-      <button
+      <Button
         type="submit"
         disabled={form.formState.isSubmitting}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
       >
         {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
-      </button>
+      </Button>
     </form>
   );
 }

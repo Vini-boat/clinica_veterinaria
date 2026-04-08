@@ -95,15 +95,6 @@ export default async function ProntuariosPage({
           <button type="submit" className="rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted">
             Carregar prontuario
           </button>
-
-          {hasSelectedAnimal ? (
-            <Link
-              href={`/app/prontuarios/nova-entrada?animalId=${selectedAnimalId}`}
-              className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
-            >
-              Nova Entrada
-            </Link>
-          ) : null}
         </form>
       </div>
 
@@ -124,15 +115,38 @@ export default async function ProntuariosPage({
           title="Selecione um animal"
           description="A timeline de prontuario e carregada somente apos selecionar o pet no filtro acima."
         />
-      ) : (entradas?.length ?? 0) === 0 ? (
-        <EmptyState
-          title="Sem entradas de prontuario"
-          description="Nenhuma entrada encontrada para o animal selecionado. Use o botao Nova Entrada para inserir o primeiro evento."
-        />
       ) : (
         <section className="rounded-xl border bg-card p-4">
           <h3 className="mb-4 text-lg font-semibold">Timeline Clinica</h3>
           <div className="space-y-4">
+            <Link
+              href={`/app/prontuarios/nova-entrada?animalId=${selectedAnimalId}`}
+              className="grid gap-3 rounded-lg border border-dashed p-4 transition-colors hover:bg-muted/50 md:grid-cols-[120px_1fr]"
+            >
+              <div className="text-sm text-muted-foreground">
+                <p>Nova entrada</p>
+                <p>Adicionar evento</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                    Novo registro
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Clique para adicionar a primeira ou a proxima entrada do prontuario.
+                </p>
+              </div>
+            </Link>
+
+            {(entradas?.length ?? 0) === 0 ? (
+              <EmptyState
+                title="Sem entradas de prontuario"
+                description="Nenhuma entrada encontrada para o animal selecionado. Use o item Nova entrada no topo da timeline para inserir o primeiro evento."
+              />
+            ) : null}
+
             {(entradas ?? []).map((entrada, index, array) => {
               const current = formatDateTime(entrada.data_hora);
               const previous = index > 0 ? formatDateTime(array[index - 1].data_hora) : null;

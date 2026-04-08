@@ -1,4 +1,14 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type Column<T> = {
   key: string;
@@ -20,50 +30,50 @@ export default function CrudTable<T extends { id: number }>({
   onDelete: (id: number) => Promise<void>;
 }>) {
   return (
-    <div className="rounded-xl border bg-card">
-      <div className="flex items-center justify-between border-b px-4 py-3">
-        <h2 className="text-lg font-semibold">Registros</h2>
-        <Link href={createHref} className="rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">
-          Novo
-        </Link>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50 text-left">
-            <tr>
+    <Card className="gap-0 py-0">
+      <CardHeader className="flex flex-row items-center justify-between border-b">
+        <CardTitle>Registros</CardTitle>
+        <Button asChild>
+          <Link href={createHref}>Novo</Link>
+        </Button>
+      </CardHeader>
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader className="bg-muted/50">
+            <TableRow>
               {columns.map((column) => (
-                <th key={column.key} className="px-3 py-2 font-medium">
+                <TableHead key={column.key}>
                   {column.label}
-                </th>
+                </TableHead>
               ))}
-              <th className="px-3 py-2 font-medium">Acoes</th>
-            </tr>
-          </thead>
-          <tbody>
+              <TableHead>Acoes</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {rows.map((row) => (
-              <tr key={row.id} className="border-t">
+              <TableRow key={row.id}>
                 {columns.map((column) => (
-                  <td key={column.key} className="px-3 py-2">
+                  <TableCell key={column.key}>
                     {column.render(row)}
-                  </td>
+                  </TableCell>
                 ))}
-                <td className="px-3 py-2">
+                <TableCell>
                   <div className="flex gap-2">
-                    <Link href={editHref(row.id)} className="rounded-md border px-2 py-1 hover:bg-muted">
-                      Editar
-                    </Link>
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={editHref(row.id)}>Editar</Link>
+                    </Button>
                     <form action={onDelete.bind(null, row.id)}>
-                      <button type="submit" className="rounded-md border px-2 py-1 text-destructive hover:bg-muted">
+                      <Button type="submit" variant="destructive" size="sm">
                         Excluir
-                      </button>
+                      </Button>
                     </form>
                   </div>
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }

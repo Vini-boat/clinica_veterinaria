@@ -1,3 +1,5 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 export default function EmptyState({
   title,
   description,
@@ -6,9 +8,13 @@ export default function EmptyState({
   description: string;
 }>) {
   return (
-    <div className="rounded-xl border border-dashed bg-card p-8 text-center">
-      <h3 className="text-base font-semibold">{title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground">{description}</p>
-    </div>
+    <Card className="border border-dashed py-0 text-center">
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">{description}</p>
+      </CardContent>
+    </Card>
   );
 }

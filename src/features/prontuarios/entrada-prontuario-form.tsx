@@ -1,11 +1,23 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { selectedValuesAsNumbers } from "@/features/shared/utils/form-utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { entradaProntuarioSchema, type EntradaProntuarioFormValues } from "./schema";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 type EntradaSubmit = (values: EntradaProntuarioFormValues) => Promise<{ ok: boolean; message: string }>;
 
@@ -50,105 +62,159 @@ export default function EntradaProntuarioForm({
     }
   });
 
+  const idAnimal = useWatch({ control: form.control, name: "id_animal" });
+  const idTipoEntradaProntuario = useWatch({
+    control: form.control,
+    name: "id_tipo_entrada_prontuario",
+  });
+  const medicamentosSelecionados = useWatch({ control: form.control, name: "medicamentos" }) ?? [];
+  const funcionariosSelecionados = useWatch({ control: form.control, name: "funcionarios" }) ?? [];
+
+  const toggleNumberSelection = (
+    field: "medicamentos" | "funcionarios",
+    id: number,
+    checked: boolean,
+  ) => {
+    const current = form.getValues(field);
+    const next = checked ? Array.from(new Set([...current, id])) : current.filter((currentId) => currentId !== id);
+
+    form.setValue(field, next, { shouldValidate: true });
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="id_animal" className="mb-1 block text-sm font-medium">Animal</label>
-          <select
-            id="id_animal"
-            className="w-full rounded-md border px-3 py-2"
-            value={form.watch("id_animal") ?? ""}
-            onChange={(event) => form.setValue("id_animal", Number(event.target.value), { shouldValidate: true })}
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="id_animal">Animal</Label>
+          <Select
+            value={idAnimal ? String(idAnimal) : undefined}
+            onValueChange={(value) => form.setValue("id_animal", Number(value), { shouldValidate: true })}
           >
-            <option value="">Selecione...</option>
-            {lookup.animais.map((animal) => (
-              <option key={animal.id_animal} value={animal.id_animal}>
-                {(animal.nome ?? `Animal ${animal.id_animal}`) + " - " + (animal.cliente_nome ?? "Sem dono")}
-              </option>
-            ))}
-          </select>
-          <p className="mt-1 text-xs text-destructive">{form.formState.errors.id_animal?.message}</p>
+            <SelectTrigger id="id_animal" className="w-full" aria-invalid={!!form.formState.errors.id_animal}>
+              <SelectValue placeholder="Selecione..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {lookup.animais.map((animal) => (
+                  <SelectItem key={animal.id_animal} value={String(animal.id_animal)}>
+                    {(animal.nome ?? `Animal ${animal.id_animal}`) + " - " + (animal.cliente_nome ?? "Sem dono")}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-destructive">{form.formState.errors.id_animal?.message}</p>
         </div>
 
-        <div>
-          <label htmlFor="id_tipo_entrada_prontuario" className="mb-1 block text-sm font-medium">Tipo de entrada</label>
-          <select
-            id="id_tipo_entrada_prontuario"
-            className="w-full rounded-md border px-3 py-2"
-            value={form.watch("id_tipo_entrada_prontuario") ?? ""}
-            onChange={(event) =>
-              form.setValue("id_tipo_entrada_prontuario", Number(event.target.value), { shouldValidate: true })
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="id_tipo_entrada_prontuario">Tipo de entrada</Label>
+          <Select
+            value={idTipoEntradaProntuario ? String(idTipoEntradaProntuario) : undefined}
+            onValueChange={(value) =>
+              form.setValue("id_tipo_entrada_prontuario", Number(value), { shouldValidate: true })
             }
           >
-            <option value="">Selecione...</option>
-            {lookup.tiposEntrada.map((tipo) => (
-              <option key={tipo.id_tipo_entrada_prontuario} value={tipo.id_tipo_entrada_prontuario}>
-                {tipo.nome ?? `Tipo ${tipo.id_tipo_entrada_prontuario}`}
-              </option>
-            ))}
-          </select>
-          <p className="mt-1 text-xs text-destructive">{form.formState.errors.id_tipo_entrada_prontuario?.message}</p>
+            <SelectTrigger
+              id="id_tipo_entrada_prontuario"
+              className="w-full"
+              aria-invalid={!!form.formState.errors.id_tipo_entrada_prontuario}
+            >
+              <SelectValue placeholder="Selecione..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {lookup.tiposEntrada.map((tipo) => (
+                  <SelectItem key={tipo.id_tipo_entrada_prontuario} value={String(tipo.id_tipo_entrada_prontuario)}>
+                    {tipo.nome ?? `Tipo ${tipo.id_tipo_entrada_prontuario}`}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-destructive">{form.formState.errors.id_tipo_entrada_prontuario?.message}</p>
         </div>
       </div>
 
-      <div>
-        <label htmlFor="data_hora" className="mb-1 block text-sm font-medium">Data e hora</label>
-        <input id="data_hora" type="datetime-local" {...form.register("data_hora")} className="w-full rounded-md border px-3 py-2" />
-        <p className="mt-1 text-xs text-destructive">{form.formState.errors.data_hora?.message}</p>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="data_hora">Data e hora</Label>
+        <Input
+          id="data_hora"
+          type="datetime-local"
+          {...form.register("data_hora")}
+          aria-invalid={!!form.formState.errors.data_hora}
+        />
+        <p className="text-xs text-destructive">{form.formState.errors.data_hora?.message}</p>
       </div>
 
-      <div>
-        <label htmlFor="observacao" className="mb-1 block text-sm font-medium">Observacoes</label>
-        <textarea id="observacao" {...form.register("observacao")} className="min-h-24 w-full rounded-md border px-3 py-2" />
-        <p className="mt-1 text-xs text-destructive">{form.formState.errors.observacao?.message}</p>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="observacao">Observacoes</Label>
+        <Textarea
+          id="observacao"
+          {...form.register("observacao")}
+          className="min-h-24"
+          aria-invalid={!!form.formState.errors.observacao}
+        />
+        <p className="text-xs text-destructive">{form.formState.errors.observacao?.message}</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="medicamentos" className="mb-1 block text-sm font-medium">Medicamentos (N:N)</label>
-          <select
-            id="medicamentos"
-            multiple
-            className="min-h-40 w-full rounded-md border px-3 py-2"
-            onChange={(event) => form.setValue("medicamentos", selectedValuesAsNumbers(event.currentTarget.options))}
-          >
-            {lookup.medicamentos.map((medicamento) => (
-              <option key={medicamento.id_medicamento} value={medicamento.id_medicamento}>
-                {medicamento.nome ?? `Medicamento ${medicamento.id_medicamento}`}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-col gap-2">
+          <Label>Medicamentos (N:N)</Label>
+          <div className="max-h-40 overflow-y-auto rounded-2xl border border-input bg-input/30 p-3">
+            <div className="flex flex-col gap-2">
+              {lookup.medicamentos.map((medicamento) => {
+                const checked = medicamentosSelecionados.includes(medicamento.id_medicamento);
+
+                return (
+                  <label key={medicamento.id_medicamento} className="flex items-center gap-2 text-sm">
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={(value) =>
+                        toggleNumberSelection("medicamentos", medicamento.id_medicamento, value === true)
+                      }
+                    />
+                    <span>{medicamento.nome ?? `Medicamento ${medicamento.id_medicamento}`}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="funcionarios" className="mb-1 block text-sm font-medium">Funcionarios (N:N)</label>
-          <select
-            id="funcionarios"
-            multiple
-            className="min-h-40 w-full rounded-md border px-3 py-2"
-            onChange={(event) => form.setValue("funcionarios", selectedValuesAsNumbers(event.currentTarget.options))}
-          >
-            {lookup.funcionarios.map((funcionario) => (
-              <option key={funcionario.id_funcionario} value={funcionario.id_funcionario}>
-                {funcionario.nome ?? `Funcionario ${funcionario.id_funcionario}`}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-col gap-2">
+          <Label>Funcionarios (N:N)</Label>
+          <div className="max-h-40 overflow-y-auto rounded-2xl border border-input bg-input/30 p-3">
+            <div className="flex flex-col gap-2">
+              {lookup.funcionarios.map((funcionario) => {
+                const checked = funcionariosSelecionados.includes(funcionario.id_funcionario);
+
+                return (
+                  <label key={funcionario.id_funcionario} className="flex items-center gap-2 text-sm">
+                    <Checkbox
+                      checked={checked}
+                      onCheckedChange={(value) =>
+                        toggleNumberSelection("funcionarios", funcionario.id_funcionario, value === true)
+                      }
+                    />
+                    <span>{funcionario.nome ?? `Funcionario ${funcionario.id_funcionario}`}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
-      <p className="text-xs text-muted-foreground">Use Ctrl/Cmd para selecionar multiplos itens em cada lista.</p>
+      <p className="text-xs text-muted-foreground">Selecione os itens vinculados em cada lista.</p>
 
       {serverMessage ? <p className="text-sm">{serverMessage}</p> : null}
 
-      <button
+      <Button
         type="submit"
         disabled={form.formState.isSubmitting}
-        className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
       >
         {form.formState.isSubmitting ? "Salvando..." : "Salvar entrada"}
-      </button>
+      </Button>
     </form>
   );
 }

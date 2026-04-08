@@ -23,6 +23,14 @@ Ao escrever ou refatorar código, guie-se por estes princípios:
 
 ---
 
+## REGRA ESTRITA DE UI:
+1. É OBRIGATÓRIA a utilização dos componentes do Shadcn UI para todos os elementos visuais da aplicação (Cards, Buttons, Modals/Drawers, Inputs, Selects, Forms, Badges, Separators, etc.).
+2. NÃO cries componentes de UI do zero utilizando apenas HTML e Tailwind se existir um componente equivalente no Shadcn.
+3. Sempre que precisares de um novo elemento, deves utilizar a CLI do Shadcn para o instalar no projeto (ex: `npx shadcn-ui@latest add dialog` ou o comando correspondente atualizado) antes de o implementares no código.
+4. Consulta as tuas regras e documentação locais na pasta `.agents/skills/shadcn/` para garantires que segues as boas práticas e a configuração exata deste projeto.
+
+---
+
 ## 🔄 Workflow de Execução (O Método)
 
 Sempre que receber uma nova tarefa, siga esta ordem exata. Não pule etapas.
