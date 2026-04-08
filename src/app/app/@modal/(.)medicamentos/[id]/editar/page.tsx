@@ -1,0 +1,37 @@
+import RouteModal from "@/features/shared/components/route-modal";
+import MedicamentoForm from "@/features/medicamentos/medicamento-form";
+import { updateMedicamentoAction } from "@/features/medicamentos/actions";
+import { createClient } from "@/utils/supabase/server";
+import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
+
+export default async function EditarMedicamentoModalPage({
+  params,
+}: Readonly<{
+  params: Promise<{ id: string }>;
+}>) {
+  const { id } = await params;
+  const idMedicamento = Number(id);
+
+  if (!Number.isFinite(idMedicamento)) {
+    notFound();
+  }
+
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+  const { data } = await supabase
+    .from("medicamento")
+    .select("id_medicamento, nome")
+    .eq("id_medicamento", idMedicamento)
+    .single();
+
+  if (!data) {
+    notFound();
+  }
+
+  return (
+    <RouteModal title="Editar Medicamento" description="Atualizacao de medicamento existente.">
+      <MedicamentoForm defaultValues={{ nome: data.nome ?? "" }} onSubmit={updateMedicamentoAction.bind(null, idMedicamento)} />
+    </RouteModal>
+  );
+}
