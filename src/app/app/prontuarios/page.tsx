@@ -1,6 +1,9 @@
 import EmptyState from "@/features/shared/components/empty-state";
+import AnimalFilter from "@/features/prontuarios/animal-filter";
+import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
+import { Plus } from "lucide-react";
 import Link from "next/link";
 
 function formatDateTime(dateTimeIso: string | null): { date: string; time: string; dayKey: string } {
@@ -72,36 +75,14 @@ export default async function ProntuariosPage({
         <h2 className="text-2xl font-semibold">Prontuario por Animal</h2>
         <p className="mt-1 text-sm text-muted-foreground">Selecione um animal para visualizar a timeline clinica em ordem decrescente.</p>
 
-        <form className="mt-4 flex flex-wrap items-end gap-3" action="/app/prontuarios" method="get">
-          <div className="min-w-72">
-            <label htmlFor="animalId" className="mb-1 block text-sm font-medium">Animal</label>
-            <select
-              id="animalId"
-              name="animalId"
-              className="w-full rounded-md border px-3 py-2"
-              defaultValue={hasSelectedAnimal ? String(selectedAnimalId) : ""}
-            >
-              <option value="">Selecione...</option>
-              {(animais ?? []).map((animal) => (
-                <option key={animal.id_animal} value={animal.id_animal}>
-                  {(animal.nome ?? `Animal ${animal.id_animal}`) +
-                    " - " +
-                    (relationFirst(animal.cliente as { nome: string | null } | Array<{ nome: string | null }> | null)?.nome ??
-                      "Sem dono")}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button type="submit" className="rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted">
-            Carregar prontuario
-          </button>
-        </form>
+        <div className="mt-4 flex flex-wrap items-end gap-3">
+          <AnimalFilter animais={animais ?? []} selectedAnimalId={hasSelectedAnimal ? selectedAnimalId : undefined} />
+        </div>
       </div>
 
       {selectedAnimal ? (
         <section className="rounded-xl border bg-card p-4">
-          <h3 className="text-lg font-semibold">Cabecalho do Animal</h3>
-          <div className="mt-3 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-3 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
             <p><span className="font-medium">Nome:</span> {selectedAnimal.nome ?? "-"}</p>
             <p><span className="font-medium">Cliente:</span> {relationFirst(selectedAnimal.cliente as { nome: string | null } | Array<{ nome: string | null }> | null)?.nome ?? "-"}</p>
             <p><span className="font-medium">CPF dono:</span> {relationFirst(selectedAnimal.cliente as { cpf: string | null } | Array<{ cpf: string | null }> | null)?.cpf ?? "-"}</p>
@@ -119,26 +100,11 @@ export default async function ProntuariosPage({
         <section className="rounded-xl border bg-card p-4">
           <h3 className="mb-4 text-lg font-semibold">Timeline Clinica</h3>
           <div className="space-y-4">
-            <Link
-              href={`/app/prontuarios/nova-entrada?animalId=${selectedAnimalId}`}
-              className="grid gap-3 rounded-lg border border-dashed p-4 transition-colors hover:bg-muted/50 md:grid-cols-[120px_1fr]"
-            >
-              <div className="text-sm text-muted-foreground">
-                <p>Nova entrada</p>
-                <p>Adicionar evento</p>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-                    Novo registro
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Clique para adicionar a primeira ou a proxima entrada do prontuario.
-                </p>
-              </div>
-            </Link>
+            <Button asChild variant="outline" className="h-auto min-h-24 w-full rounded-lg border-dashed p-4">
+              <Link href={`/app/prontuarios/nova-entrada?animalId=${selectedAnimalId}`} className="flex items-center justify-center">
+                <Plus className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
+              </Link>
+            </Button>
 
             {(entradas?.length ?? 0) === 0 ? (
               <EmptyState
