@@ -48,9 +48,14 @@ export async function updateAnimalAction(idAnimal: number, values: AnimalFormVal
   return actionSuccess("Animal atualizado com sucesso");
 }
 
-export async function deleteAnimalAction(idAnimal: number): Promise<void> {
+export async function deleteAnimalAction(idAnimal: number): Promise<ActionState> {
   const supabase = await getServerSupabase();
-  await supabase.from("animal").delete().eq("id_animal", idAnimal);
+  const { error } = await supabase.from("animal").delete().eq("id_animal", idAnimal);
+  if (error) {
+    return actionError(error.message);
+  }
+
   revalidatePath("/app/animais");
   revalidatePath("/app/prontuarios");
+  return actionSuccess("Animal excluido com sucesso");
 }

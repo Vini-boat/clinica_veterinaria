@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { entradaProntuarioSchema, type EntradaProntuarioFormValues } from "./schema";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -18,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import SearchableMultiSelect from "@/features/shared/components/searchable-multi-select";
 
 type EntradaSubmit = (values: EntradaProntuarioFormValues) => Promise<{ ok: boolean; message: string }>;
 
@@ -70,16 +70,22 @@ export default function EntradaProntuarioForm({
   const medicamentosSelecionados = useWatch({ control: form.control, name: "medicamentos" }) ?? [];
   const funcionariosSelecionados = useWatch({ control: form.control, name: "funcionarios" }) ?? [];
 
-  const toggleNumberSelection = (
+  const setNumberSelection = (
     field: "medicamentos" | "funcionarios",
-    id: number,
-    checked: boolean,
+    next: number[],
   ) => {
-    const current = form.getValues(field);
-    const next = checked ? Array.from(new Set([...current, id])) : current.filter((currentId) => currentId !== id);
-
     form.setValue(field, next, { shouldValidate: true });
   };
+
+  const medicamentoOptions = lookup.medicamentos.map((medicamento) => ({
+    id: medicamento.id_medicamento,
+    label: medicamento.nome?.trim() || "Medicamento sem nome",
+  }));
+
+  const funcionarioOptions = lookup.funcionarios.map((funcionario) => ({
+    id: funcionario.id_funcionario,
+    label: funcionario.nome?.trim() || "Funcionario sem nome",
+  }));
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -160,48 +166,28 @@ export default function EntradaProntuarioForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Label>Medicamentos (N:N)</Label>
-          <div className="max-h-40 overflow-y-auto rounded-2xl border border-input bg-input/30 p-3">
-            <div className="flex flex-col gap-2">
-              {lookup.medicamentos.map((medicamento) => {
-                const checked = medicamentosSelecionados.includes(medicamento.id_medicamento);
-
-                return (
-                  <label key={medicamento.id_medicamento} className="flex items-center gap-2 text-sm">
-                    <Checkbox
-                      checked={checked}
-                      onCheckedChange={(value) =>
-                        toggleNumberSelection("medicamentos", medicamento.id_medicamento, value === true)
-                      }
-                    />
-                    <span>{medicamento.nome ?? `Medicamento ${medicamento.id_medicamento}`}</span>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
+          <SearchableMultiSelect
+            options={medicamentoOptions}
+            selectedIds={medicamentosSelecionados}
+            onSelectionChange={(next) => setNumberSelection("medicamentos", next)}
+            placeholder="Buscar e selecionar medicamentos..."
+            searchPlaceholder="Pesquisar medicamento..."
+            emptySearchText="Nenhum medicamento encontrado"
+            emptySelectionText="Nenhum medicamento selecionado"
+          />
         </div>
 
         <div className="flex flex-col gap-2">
           <Label>Funcionarios (N:N)</Label>
-          <div className="max-h-40 overflow-y-auto rounded-2xl border border-input bg-input/30 p-3">
-            <div className="flex flex-col gap-2">
-              {lookup.funcionarios.map((funcionario) => {
-                const checked = funcionariosSelecionados.includes(funcionario.id_funcionario);
-
-                return (
-                  <label key={funcionario.id_funcionario} className="flex items-center gap-2 text-sm">
-                    <Checkbox
-                      checked={checked}
-                      onCheckedChange={(value) =>
-                        toggleNumberSelection("funcionarios", funcionario.id_funcionario, value === true)
-                      }
-                    />
-                    <span>{funcionario.nome ?? `Funcionario ${funcionario.id_funcionario}`}</span>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
+          <SearchableMultiSelect
+            options={funcionarioOptions}
+            selectedIds={funcionariosSelecionados}
+            onSelectionChange={(next) => setNumberSelection("funcionarios", next)}
+            placeholder="Buscar e selecionar funcionarios..."
+            searchPlaceholder="Pesquisar funcionario..."
+            emptySearchText="Nenhum funcionario encontrado"
+            emptySelectionText="Nenhum funcionario selecionado"
+          />
         </div>
       </div>
 

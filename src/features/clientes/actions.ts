@@ -36,8 +36,13 @@ export async function updateClienteAction(idCliente: number, values: ClienteForm
   return actionSuccess("Cliente atualizado com sucesso");
 }
 
-export async function deleteClienteAction(idCliente: number): Promise<void> {
+export async function deleteClienteAction(idCliente: number): Promise<ActionState> {
   const supabase = await getServerSupabase();
-  await supabase.from("cliente").delete().eq("id_cliente", idCliente);
+  const { error } = await supabase.from("cliente").delete().eq("id_cliente", idCliente);
+  if (error) {
+    return actionError(error.message);
+  }
+
   revalidatePath("/app/clientes");
+  return actionSuccess("Cliente excluido com sucesso");
 }

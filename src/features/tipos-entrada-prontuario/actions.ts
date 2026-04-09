@@ -39,8 +39,13 @@ export async function updateTipoEntradaProntuarioAction(idTipo: number, values: 
   return actionSuccess("Tipo de entrada atualizado com sucesso");
 }
 
-export async function deleteTipoEntradaProntuarioAction(idTipo: number): Promise<void> {
+export async function deleteTipoEntradaProntuarioAction(idTipo: number): Promise<ActionState> {
   const supabase = await getServerSupabase();
-  await supabase.from("tipo_entrada_prontuario").delete().eq("id_tipo_entrada_prontuario", idTipo);
+  const { error } = await supabase.from("tipo_entrada_prontuario").delete().eq("id_tipo_entrada_prontuario", idTipo);
+  if (error) {
+    return actionError(error.message);
+  }
+
   revalidatePath("/app/tipos-entrada-prontuario");
+  return actionSuccess("Tipo de entrada excluido com sucesso");
 }

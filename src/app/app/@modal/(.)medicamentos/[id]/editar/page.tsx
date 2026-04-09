@@ -1,6 +1,6 @@
 import RouteModal from "@/features/shared/components/route-modal";
 import MedicamentoForm from "@/features/medicamentos/medicamento-form";
-import { updateMedicamentoAction } from "@/features/medicamentos/actions";
+import { deleteMedicamentoAction, updateMedicamentoAction } from "@/features/medicamentos/actions";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -31,7 +31,11 @@ export default async function EditarMedicamentoModalPage({
 
   return (
     <RouteModal title="Editar Medicamento" description="Atualizacao de medicamento existente.">
-      <MedicamentoForm defaultValues={{ nome: data.nome ?? "" }} onSubmit={updateMedicamentoAction.bind(null, idMedicamento)} />
+      <MedicamentoForm
+        defaultValues={{ nome: data.nome ?? "" }}
+        onSubmit={updateMedicamentoAction.bind(null, idMedicamento)}
+        onDelete={deleteMedicamentoAction.bind(null, idMedicamento)}
+      />
     </RouteModal>
   );
 }

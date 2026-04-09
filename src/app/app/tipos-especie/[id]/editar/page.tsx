@@ -1,5 +1,5 @@
 import TipoEspecieForm from "@/features/tipos-especie/tipo-especie-form";
-import { updateTipoEspecieAction } from "@/features/tipos-especie/actions";
+import { deleteTipoEspecieAction, updateTipoEspecieAction } from "@/features/tipos-especie/actions";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -37,6 +37,7 @@ export default async function EditarTipoEspeciePage({
           raca: data.raca ?? "",
         }}
         onSubmit={updateTipoEspecieAction.bind(null, idTipo)}
+        onDelete={deleteTipoEspecieAction.bind(null, idTipo)}
       />
     </section>
   );

@@ -1,7 +1,6 @@
 import CrudTable from "@/features/shared/components/crud-table";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
-import { deleteTipoEntradaProntuarioAction } from "@/features/tipos-entrada-prontuario/actions";
 
 export default async function TiposEntradaProntuarioPage() {
   const cookieStore = await cookies();
@@ -23,7 +22,6 @@ export default async function TiposEntradaProntuarioPage() {
         rows={rows}
         createHref="/app/tipos-entrada-prontuario/novo"
         editHref={(id) => `/app/tipos-entrada-prontuario/${id}/editar`}
-        onDelete={deleteTipoEntradaProntuarioAction}
         columns={[{ key: "nome", label: "Nome", render: (row) => row.nome }]}
       />
     </section>

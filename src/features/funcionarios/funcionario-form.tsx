@@ -5,21 +5,26 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { funcionarioSchema, type FuncionarioFormValues } from "./schema";
+import type { ActionState } from "@/features/shared/utils/server-action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 type FuncionarioSubmit = (values: FuncionarioFormValues) => Promise<{ ok: boolean; message: string }>;
+type FuncionarioDelete = () => Promise<ActionState>;
 
 export default function FuncionarioForm({
   defaultValues,
   onSubmit,
+  onDelete,
 }: Readonly<{
   defaultValues?: Partial<FuncionarioFormValues>;
   onSubmit: FuncionarioSubmit;
+  onDelete?: FuncionarioDelete;
 }>) {
   const router = useRouter();
   const [serverMessage, setServerMessage] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const form = useForm<FuncionarioFormValues>({
     resolver: zodResolver(funcionarioSchema),
@@ -40,6 +45,23 @@ export default function FuncionarioForm({
       router.refresh();
     }
   });
+
+  const handleDelete = async () => {
+    if (!onDelete) {
+      return;
+    }
+
+    setIsDeleting(true);
+    const result = await onDelete();
+    setServerMessage(result.message);
+
+    if (result.ok) {
+      router.back();
+      router.refresh();
+    }
+
+    setIsDeleting(false);
+  };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -68,12 +90,16 @@ export default function FuncionarioForm({
 
       {serverMessage ? <p className="text-sm">{serverMessage}</p> : null}
 
-      <Button
-        type="submit"
-        disabled={form.formState.isSubmitting}
-      >
-        {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
-      </Button>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Button type="submit" disabled={form.formState.isSubmitting || isDeleting}>
+          {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
+        </Button>
+        {onDelete ? (
+          <Button type="button" variant="destructive" onClick={handleDelete} disabled={isDeleting || form.formState.isSubmitting}>
+            {isDeleting ? "Excluindo..." : "Excluir"}
+          </Button>
+        ) : null}
+      </div>
     </form>
   );
 }

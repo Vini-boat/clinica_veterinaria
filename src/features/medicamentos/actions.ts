@@ -36,8 +36,13 @@ export async function updateMedicamentoAction(idMedicamento: number, values: Med
   return actionSuccess("Medicamento atualizado com sucesso");
 }
 
-export async function deleteMedicamentoAction(idMedicamento: number): Promise<void> {
+export async function deleteMedicamentoAction(idMedicamento: number): Promise<ActionState> {
   const supabase = await getServerSupabase();
-  await supabase.from("medicamento").delete().eq("id_medicamento", idMedicamento);
+  const { error } = await supabase.from("medicamento").delete().eq("id_medicamento", idMedicamento);
+  if (error) {
+    return actionError(error.message);
+  }
+
   revalidatePath("/app/medicamentos");
+  return actionSuccess("Medicamento excluido com sucesso");
 }

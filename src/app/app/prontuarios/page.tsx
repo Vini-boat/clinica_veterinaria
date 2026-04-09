@@ -154,7 +154,6 @@ export default async function ProntuariosPage({
 
                   <article className="grid gap-3 rounded-lg border p-4 md:grid-cols-[120px_1fr]">
                     <div className="text-sm text-muted-foreground">
-                      <p>{current.date}</p>
                       <p>{current.time}</p>
                     </div>
 

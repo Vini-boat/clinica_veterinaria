@@ -1,5 +1,5 @@
 import MedicamentoForm from "@/features/medicamentos/medicamento-form";
-import { updateMedicamentoAction } from "@/features/medicamentos/actions";
+import { deleteMedicamentoAction, updateMedicamentoAction } from "@/features/medicamentos/actions";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -31,7 +31,11 @@ export default async function EditarMedicamentoPage({
   return (
     <section className="rounded-xl border bg-card p-6">
       <h2 className="mb-4 text-xl font-semibold">Editar Medicamento</h2>
-      <MedicamentoForm defaultValues={{ nome: data.nome ?? "" }} onSubmit={updateMedicamentoAction.bind(null, idMedicamento)} />
+      <MedicamentoForm
+        defaultValues={{ nome: data.nome ?? "" }}
+        onSubmit={updateMedicamentoAction.bind(null, idMedicamento)}
+        onDelete={deleteMedicamentoAction.bind(null, idMedicamento)}
+      />
     </section>
   );
 }

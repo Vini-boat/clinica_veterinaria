@@ -1,7 +1,6 @@
 import CrudTable from "@/features/shared/components/crud-table";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
-import { deleteFuncionarioAction } from "@/features/funcionarios/actions";
 
 export default async function FuncionariosPage() {
   const cookieStore = await cookies();
@@ -25,7 +24,6 @@ export default async function FuncionariosPage() {
         rows={rows}
         createHref="/app/funcionarios/novo"
         editHref={(id) => `/app/funcionarios/${id}/editar`}
-        onDelete={deleteFuncionarioAction}
         columns={[
           { key: "nome", label: "Nome", render: (row) => row.nome },
           { key: "cpf", label: "CPF", render: (row) => row.cpf },

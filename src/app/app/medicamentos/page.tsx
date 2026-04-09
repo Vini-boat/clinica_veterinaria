@@ -1,7 +1,6 @@
 import CrudTable from "@/features/shared/components/crud-table";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
-import { deleteMedicamentoAction } from "@/features/medicamentos/actions";
 
 export default async function MedicamentosPage() {
   const cookieStore = await cookies();
@@ -20,7 +19,6 @@ export default async function MedicamentosPage() {
         rows={rows}
         createHref="/app/medicamentos/novo"
         editHref={(id) => `/app/medicamentos/${id}/editar`}
-        onDelete={deleteMedicamentoAction}
         columns={[{ key: "nome", label: "Nome", render: (row) => row.nome }]}
       />
     </section>
