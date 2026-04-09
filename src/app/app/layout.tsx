@@ -45,7 +45,7 @@ export default async function AppLayout({
       </header>
 
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-[240px_1fr]">
-        <aside className="rounded-xl border bg-card p-3">
+        <aside className="rounded-xl border bg-card p-3 h-fit self-start sticky top-6">
           <nav className="space-y-1">
             {navItems.map((item) => (
               <Link
