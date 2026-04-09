@@ -1,7 +1,6 @@
 import CrudTable from "@/features/shared/components/crud-table";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
-import { deleteTipoEspecieAction } from "@/features/tipos-especie/actions";
 
 export default async function TiposEspeciePage() {
   const cookieStore = await cookies();
@@ -21,7 +20,6 @@ export default async function TiposEspeciePage() {
         rows={rows}
         createHref="/app/tipos-especie/novo"
         editHref={(id) => `/app/tipos-especie/${id}/editar`}
-        onDelete={deleteTipoEspecieAction}
         columns={[
           { key: "especie", label: "Especie", render: (row) => row.especie },
           { key: "raca", label: "Raca", render: (row) => row.raca },

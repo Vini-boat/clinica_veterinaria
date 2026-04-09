@@ -1,5 +1,5 @@
 import FuncionarioForm from "@/features/funcionarios/funcionario-form";
-import { updateFuncionarioAction } from "@/features/funcionarios/actions";
+import { deleteFuncionarioAction, updateFuncionarioAction } from "@/features/funcionarios/actions";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -39,6 +39,7 @@ export default async function EditarFuncionarioPage({
           endereco: data.endereco ?? "",
         }}
         onSubmit={updateFuncionarioAction.bind(null, idFuncionario)}
+        onDelete={deleteFuncionarioAction.bind(null, idFuncionario)}
       />
     </section>
   );

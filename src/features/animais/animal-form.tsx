@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { animalSchema, type AnimalFormValues } from "./schema";
+import type { ActionState } from "@/features/shared/utils/server-action";
 import { toNullableNumber } from "@/features/shared/utils/form-utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 type AnimalSubmit = (values: AnimalFormValues) => Promise<{ ok: boolean; message: string }>;
+type AnimalDelete = () => Promise<ActionState>;
 
 type AnimalLookup = {
   clientes: Array<{ id_cliente: number; nome: string | null }>;
@@ -30,13 +32,16 @@ export default function AnimalForm({
   defaultValues,
   lookup,
   onSubmit,
+  onDelete,
 }: Readonly<{
   defaultValues?: Partial<AnimalFormValues>;
   lookup: AnimalLookup;
   onSubmit: AnimalSubmit;
+  onDelete?: AnimalDelete;
 }>) {
   const router = useRouter();
   const [serverMessage, setServerMessage] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const form = useForm<AnimalFormValues>({
     resolver: zodResolver(animalSchema),
@@ -61,6 +66,23 @@ export default function AnimalForm({
       router.refresh();
     }
   });
+
+  const handleDelete = async () => {
+    if (!onDelete) {
+      return;
+    }
+
+    setIsDeleting(true);
+    const result = await onDelete();
+    setServerMessage(result.message);
+
+    if (result.ok) {
+      router.back();
+      router.refresh();
+    }
+
+    setIsDeleting(false);
+  };
 
   const idCliente = useWatch({ control: form.control, name: "id_cliente" });
   const idTipoEspecie = useWatch({ control: form.control, name: "id_tipo_especie" });
@@ -193,12 +215,16 @@ export default function AnimalForm({
 
       {serverMessage ? <p className="text-sm">{serverMessage}</p> : null}
 
-      <Button
-        type="submit"
-        disabled={form.formState.isSubmitting}
-      >
-        {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
-      </Button>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Button type="submit" disabled={form.formState.isSubmitting || isDeleting}>
+          {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
+        </Button>
+        {onDelete ? (
+          <Button type="button" variant="destructive" onClick={handleDelete} disabled={isDeleting || form.formState.isSubmitting}>
+            {isDeleting ? "Excluindo..." : "Excluir"}
+          </Button>
+        ) : null}
+      </div>
     </form>
   );
 }

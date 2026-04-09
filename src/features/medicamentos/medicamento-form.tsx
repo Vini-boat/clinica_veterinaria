@@ -5,21 +5,26 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { medicamentoSchema, type MedicamentoFormValues } from "./schema";
+import type { ActionState } from "@/features/shared/utils/server-action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 type MedicamentoSubmit = (values: MedicamentoFormValues) => Promise<{ ok: boolean; message: string }>;
+type MedicamentoDelete = () => Promise<ActionState>;
 
 export default function MedicamentoForm({
   defaultValues,
   onSubmit,
+  onDelete,
 }: Readonly<{
   defaultValues?: Partial<MedicamentoFormValues>;
   onSubmit: MedicamentoSubmit;
+  onDelete?: MedicamentoDelete;
 }>) {
   const router = useRouter();
   const [serverMessage, setServerMessage] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const form = useForm<MedicamentoFormValues>({
     resolver: zodResolver(medicamentoSchema),
@@ -38,6 +43,23 @@ export default function MedicamentoForm({
     }
   });
 
+  const handleDelete = async () => {
+    if (!onDelete) {
+      return;
+    }
+
+    setIsDeleting(true);
+    const result = await onDelete();
+    setServerMessage(result.message);
+
+    if (result.ok) {
+      router.back();
+      router.refresh();
+    }
+
+    setIsDeleting(false);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
@@ -48,12 +70,16 @@ export default function MedicamentoForm({
 
       {serverMessage ? <p className="text-sm">{serverMessage}</p> : null}
 
-      <Button
-        type="submit"
-        disabled={form.formState.isSubmitting}
-      >
-        {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
-      </Button>
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Button type="submit" disabled={form.formState.isSubmitting || isDeleting}>
+          {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
+        </Button>
+        {onDelete ? (
+          <Button type="button" variant="destructive" onClick={handleDelete} disabled={isDeleting || form.formState.isSubmitting}>
+            {isDeleting ? "Excluindo..." : "Excluir"}
+          </Button>
+        ) : null}
+      </div>
     </form>
   );
 }

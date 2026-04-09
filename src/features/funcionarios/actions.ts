@@ -36,8 +36,13 @@ export async function updateFuncionarioAction(idFuncionario: number, values: Fun
   return actionSuccess("Funcionario atualizado com sucesso");
 }
 
-export async function deleteFuncionarioAction(idFuncionario: number): Promise<void> {
+export async function deleteFuncionarioAction(idFuncionario: number): Promise<ActionState> {
   const supabase = await getServerSupabase();
-  await supabase.from("funcionario").delete().eq("id_funcionario", idFuncionario);
+  const { error } = await supabase.from("funcionario").delete().eq("id_funcionario", idFuncionario);
+  if (error) {
+    return actionError(error.message);
+  }
+
   revalidatePath("/app/funcionarios");
+  return actionSuccess("Funcionario excluido com sucesso");
 }

@@ -1,5 +1,5 @@
 import ClienteForm from "@/features/clientes/cliente-form";
-import { updateClienteAction } from "@/features/clientes/actions";
+import { deleteClienteAction, updateClienteAction } from "@/features/clientes/actions";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -39,6 +39,7 @@ export default async function EditarClientePage({
           endereco: data.endereco ?? "",
         }}
         onSubmit={updateClienteAction.bind(null, idCliente)}
+        onDelete={deleteClienteAction.bind(null, idCliente)}
       />
     </section>
   );

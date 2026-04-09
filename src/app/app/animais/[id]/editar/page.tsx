@@ -1,5 +1,5 @@
 import AnimalForm from "@/features/animais/animal-form";
-import { updateAnimalAction } from "@/features/animais/actions";
+import { deleteAnimalAction, updateAnimalAction } from "@/features/animais/actions";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -52,6 +52,7 @@ export default async function EditarAnimalPage({
           tiposEspecie: tiposEspecie ?? [],
         }}
         onSubmit={updateAnimalAction.bind(null, idAnimal)}
+        onDelete={deleteAnimalAction.bind(null, idAnimal)}
       />
     </section>
   );

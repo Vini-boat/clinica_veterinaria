@@ -1,7 +1,6 @@
 import CrudTable from "@/features/shared/components/crud-table";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
-import { deleteAnimalAction } from "@/features/animais/actions";
 
 function relationFirst<T>(relation: T | T[] | null | undefined): T | null {
   if (Array.isArray(relation)) {
@@ -36,7 +35,6 @@ export default async function AnimaisPage() {
         rows={rows}
         createHref="/app/animais/novo"
         editHref={(id) => `/app/animais/${id}/editar`}
-        onDelete={deleteAnimalAction}
         columns={[
           { key: "nome", label: "Nome", render: (row) => row.nome },
           { key: "dono", label: "Cliente (dono)", render: (row) => row.dono },

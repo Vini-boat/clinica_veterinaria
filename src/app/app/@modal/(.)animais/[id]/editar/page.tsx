@@ -1,6 +1,6 @@
 import RouteModal from "@/features/shared/components/route-modal";
 import AnimalForm from "@/features/animais/animal-form";
-import { updateAnimalAction } from "@/features/animais/actions";
+import { deleteAnimalAction, updateAnimalAction } from "@/features/animais/actions";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -52,6 +52,7 @@ export default async function EditarAnimalModalPage({
           tiposEspecie: tiposEspecie ?? [],
         }}
         onSubmit={updateAnimalAction.bind(null, idAnimal)}
+        onDelete={deleteAnimalAction.bind(null, idAnimal)}
       />
     </RouteModal>
   );

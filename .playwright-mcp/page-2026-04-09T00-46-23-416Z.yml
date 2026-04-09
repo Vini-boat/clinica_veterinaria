@@ -1,0 +1,8 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - heading "Login" [level=1] [ref=e4]
+      - paragraph [ref=e5]: Use your Google account to continue.
+      - button "Login With Google" [ref=e6]
+  - button "Open Next.js Dev Tools" [ref=e12] [cursor=pointer]:
+    - img [ref=e13]

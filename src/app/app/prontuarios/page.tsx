@@ -154,7 +154,6 @@ export default async function ProntuariosPage({
 
                   <article className="grid gap-3 rounded-lg border p-4 md:grid-cols-[120px_1fr]">
                     <div className="text-sm text-muted-foreground">
-                      <p>{current.date}</p>
                       <p>{current.time}</p>
                     </div>
 
@@ -165,35 +164,31 @@ export default async function ProntuariosPage({
                       <p className="text-sm">{entrada.observacao ?? "Sem observacoes"}</p>
 
                       <div className="space-y-2">
-                        <div>
-                          <p className="mb-1 text-xs font-medium uppercase text-muted-foreground">Medicamentos (N:N)</p>
-                          <div className="flex flex-wrap gap-2">
-                            {medicamentos.length > 0 ? (
-                              medicamentos.map((nome, medIndex) => (
+                        {medicamentos.length > 0 && (
+                          <div>
+                            <p className="mb-1 text-xs font-medium uppercase text-muted-foreground">Medicamentos (N:N)</p>
+                            <div className="flex flex-wrap gap-2">
+                              {medicamentos.map((nome, medIndex) => (
                                 <span key={`${entrada.id_entrada_prontuario}-med-${medIndex}`} className="rounded-full border px-2 py-1 text-xs">
                                   {nome}
                                 </span>
-                              ))
-                            ) : (
-                              <span className="text-xs text-muted-foreground">Nenhum medicamento associado</span>
-                            )}
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        )}
 
-                        <div>
-                          <p className="mb-1 text-xs font-medium uppercase text-muted-foreground">Funcionarios (N:N)</p>
-                          <div className="flex flex-wrap gap-2">
-                            {funcionarios.length > 0 ? (
-                              funcionarios.map((nome, funIndex) => (
+                        {funcionarios.length > 0 && (
+                          <div>
+                            <p className="mb-1 text-xs font-medium uppercase text-muted-foreground">Funcionarios (N:N)</p>
+                            <div className="flex flex-wrap gap-2">
+                              {funcionarios.map((nome, funIndex) => (
                                 <span key={`${entrada.id_entrada_prontuario}-fun-${funIndex}`} className="rounded-full border px-2 py-1 text-xs">
                                   {nome}
                                 </span>
-                              ))
-                            ) : (
-                              <span className="text-xs text-muted-foreground">Nenhum funcionario associado</span>
-                            )}
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   </article>

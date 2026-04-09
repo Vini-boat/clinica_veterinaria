@@ -1,6 +1,6 @@
 import RouteModal from "@/features/shared/components/route-modal";
 import TipoEntradaProntuarioForm from "@/features/tipos-entrada-prontuario/tipo-entrada-prontuario-form";
-import { updateTipoEntradaProntuarioAction } from "@/features/tipos-entrada-prontuario/actions";
+import { deleteTipoEntradaProntuarioAction, updateTipoEntradaProntuarioAction } from "@/features/tipos-entrada-prontuario/actions";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -31,7 +31,11 @@ export default async function EditarTipoEntradaProntuarioModalPage({
 
   return (
     <RouteModal title="Editar Tipo de Entrada" description="Atualizacao de tipo de entrada existente.">
-      <TipoEntradaProntuarioForm defaultValues={{ nome: data.nome ?? "" }} onSubmit={updateTipoEntradaProntuarioAction.bind(null, idTipo)} />
+      <TipoEntradaProntuarioForm
+        defaultValues={{ nome: data.nome ?? "" }}
+        onSubmit={updateTipoEntradaProntuarioAction.bind(null, idTipo)}
+        onDelete={deleteTipoEntradaProntuarioAction.bind(null, idTipo)}
+      />
     </RouteModal>
   );
 }

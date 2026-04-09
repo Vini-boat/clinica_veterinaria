@@ -1,5 +1,5 @@
 import TipoEntradaProntuarioForm from "@/features/tipos-entrada-prontuario/tipo-entrada-prontuario-form";
-import { updateTipoEntradaProntuarioAction } from "@/features/tipos-entrada-prontuario/actions";
+import { deleteTipoEntradaProntuarioAction, updateTipoEntradaProntuarioAction } from "@/features/tipos-entrada-prontuario/actions";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -31,7 +31,11 @@ export default async function EditarTipoEntradaProntuarioPage({
   return (
     <section className="rounded-xl border bg-card p-6">
       <h2 className="mb-4 text-xl font-semibold">Editar Tipo de Entrada</h2>
-      <TipoEntradaProntuarioForm defaultValues={{ nome: data.nome ?? "" }} onSubmit={updateTipoEntradaProntuarioAction.bind(null, idTipo)} />
+      <TipoEntradaProntuarioForm
+        defaultValues={{ nome: data.nome ?? "" }}
+        onSubmit={updateTipoEntradaProntuarioAction.bind(null, idTipo)}
+        onDelete={deleteTipoEntradaProntuarioAction.bind(null, idTipo)}
+      />
     </section>
   );
 }

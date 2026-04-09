@@ -1,7 +1,6 @@
 import CrudTable from "@/features/shared/components/crud-table";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
-import { deleteClienteAction } from "@/features/clientes/actions";
 
 export default async function ClientesPage() {
   const cookieStore = await cookies();
@@ -22,7 +21,6 @@ export default async function ClientesPage() {
         rows={rows}
         createHref="/app/clientes/novo"
         editHref={(id) => `/app/clientes/${id}/editar`}
-        onDelete={deleteClienteAction}
         columns={[
           { key: "nome", label: "Nome", render: (row) => row.nome },
           { key: "cpf", label: "CPF", render: (row) => row.cpf },

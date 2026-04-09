@@ -36,8 +36,13 @@ export async function updateTipoEspecieAction(idTipoEspecie: number, values: Tip
   return actionSuccess("Tipo de especie atualizado com sucesso");
 }
 
-export async function deleteTipoEspecieAction(idTipoEspecie: number): Promise<void> {
+export async function deleteTipoEspecieAction(idTipoEspecie: number): Promise<ActionState> {
   const supabase = await getServerSupabase();
-  await supabase.from("tipo_especie").delete().eq("id_tipo_especie", idTipoEspecie);
+  const { error } = await supabase.from("tipo_especie").delete().eq("id_tipo_especie", idTipoEspecie);
+  if (error) {
+    return actionError(error.message);
+  }
+
   revalidatePath("/app/tipos-especie");
+  return actionSuccess("Tipo de especie excluido com sucesso");
 }
